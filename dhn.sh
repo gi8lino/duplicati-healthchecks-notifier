@@ -158,7 +158,7 @@ if [[ "${DUPLICATI__OPERATIONNAME}" != "Backup" ]]; then
     exit 1
 fi
 # get healthcheck entries
-HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL1%/}/api/v1/checks/")
+HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL%/}/api/v1/checks/")
 
 if [ ! -n "${HEALTHCHECKS_CHECKS}" ] || [ "${PING_URL}" == "null" ]; then
     log "ERROR" "cannot receive list of existing checks" $to_file
