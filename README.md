@@ -21,7 +21,7 @@ If you want use parameters, you have to create a separate script. Duplicati cann
 ### Example
 ``` bash
 #!/bin/bash
-/opt/duplicati-healthchecks/dhn.sh -d -l /var/log/duplicati/dhn.log
+/opt/duplicati-healthchecks-notifier/dhn.sh -d -l /var/log/duplicati/dhn.log
 ```
 ## Environment variables
 You can also use environment variables to set the healthchecks url and token.
