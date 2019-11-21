@@ -3,7 +3,7 @@ Script to add as `run-script-after` in [Duplicati](https://www.duplicati.com). I
 If the backup was not successfully, it pings '\fail'.<br>
 
 ## How it works
-The Script get a list of all existing Healthchecks checks (see [here](https://healthchecks.io/docs/api/#list-checks)). If there is a Healhcheck with the same Name as the Duplicati Job, it notify Healthchecks.
+The Script get a list of all existing Healthchecks checks. If there is a Healhcheck with the same Name as the Duplicati Job, it notify Healthchecks.
 
 ## Usage
 `dhn.sh [-u|--url URL] [-t|--token TOKEN] [-jq|--jq-path PATH] [-l|--log-file PATH] [-d|--debug] | [-h|--help] | -v|--version]`
