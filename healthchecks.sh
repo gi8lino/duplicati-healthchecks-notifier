@@ -4,11 +4,6 @@ set -o errexit
 VERSION="0.0.1"
 RESULTS=( "Error" "Warning" "Fatal" "Unknown" "Success" )
 
-DUPLICATI_PARSED_RESULT="Success"
-DUPLICATI_OPERATIONNAME="Backup"
-DUPLICATI__backup_name="[HC]: docker-iptables"
-
-
 function ShowHelp {
     RESULTS=$(IFS=\| ; echo "${RESULTS[*]}")
 	printf "%s\n" \
