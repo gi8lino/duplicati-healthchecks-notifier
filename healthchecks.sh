@@ -98,7 +98,7 @@ done
 
 if [ -n "${LOG_FILE}" ];then
     to_file=$LOG_FILE  # set path to logfile
-    log "DEBUG" "log to file ('${to_file}') enabled"
+    log "DEBUG" "log to file ('${to_file}') enabled" $to_file
 fi
 
 if [ ! -n "${HEALTHCHECKS_URL}" ]; then
