@@ -136,11 +136,11 @@ if [ -n "${JQ_PATH}" ]; then
     fi
 else
     if [ ! -x "$(command -v jq)" ]; then
-        log "ERROR" "jq is not installed! please install jq or download binary and add the path as start parameter (-j|--jq-path)" $to_file
+        log "ERROR" "'jq' is not installed! please install 'jq' or download binary and add the path as start parameter (-j|--jq-path)" $to_file
         exit 1
     fi
     JQ_PATH="jq"
-    log "DEBUG" "use 'jq' from '$(which jq)'" $to_file
+    log "DEBUG" "use installed 'jq'" $to_file
 fi
 log "DEBUG" "using '${JQ_PATH}'" $to_file
 
