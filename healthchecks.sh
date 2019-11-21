@@ -173,6 +173,7 @@ if [[ " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]] && [[ "${DUPLICATI
         log "ERROR" "cannot update healthchecks! healthchecks returned: '${result}''" $to_file
         exit 1
     fi
+    log "INFO" "${DUPLICATI__backup_name}: healthchecks successfully updated (backup: ${DUPLICATI__PARSED_RESULT})" $to_file
 fi
 
 exit 0
