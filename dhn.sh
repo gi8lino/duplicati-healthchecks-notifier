@@ -151,6 +151,7 @@ log "DEBUG" "duplicati backup name is '${DUPLICATI__backup_name}'" $to_file
 if [[ ! " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]]; then
     log "DEBUG" "'${DUPLICATI__PARSED_RESULT}' is not a valid result (valid: $(IFS=\| ; echo "${RESULTS[*]}"))" $to_file
 fi
+
 if [[ "${DUPLICATI__OPERATIONNAME}" != "Backup" ]]; then
     log "DEBUG" "'${DUPLICATI__OPERATIONNAME}' is not a backup job" $to_file
     exit
