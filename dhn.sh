@@ -9,13 +9,18 @@ function ShowHelp {
 	printf "%s\n" \
 		   "Usage: $(basename $BASH_SOURCE) [-u|--url URL] [-t|--token TOKEN] [-jq|--jq-path PATH] [-l|--log-file PATH] [-d|--debug] | [-h|--help] | [-v|--version]" \
 		   "" \
-               "Checks if Duplicati backup was successfully and ping healhchecks." \
+           "Script to add as 'run-script-after' in Duplicati (https://www.duplicati.com/)." \
+           "It notify healthchecks (https://healthchecks.io/) after running a backup job." \
            "If the backup was not successfully, it pings to '\fail'" \
+           "" \
+           "Requirements:" \
+           "- jq (https://stedolan.github.io/jq)" \
+           "You can install 'jq' or you can download it an pass the path to 'jq' with a parameter." \
 		   "" \
 		   "Parameters:" \
 		   "-u, --url [URL]                     healthchecks url" \
 		   "-t, --token [TOKEN]                 healthchecks API Access ('read-only' token does not work!)" \
-		   "-j, --jq-path [PATH]                path to jq if not in 'PATH' or not set as environment variable (HC_JQ)" \
+		   "-j, --jq-path [PATH]                path to 'jq' if not in 'PATH'" \
 		   "-l, --log-file [PATH]               log to file. if not set log to console" \
 		   "-d, --debug                         set log level to 'debug'" \
 		   "-h, --help                          display this help and exit" \
@@ -25,7 +30,6 @@ function ShowHelp {
            "You can also use environment variables to set the healthchecks url and token." \
            "HC_URL                             healthchecks url" \
            "HC_TOKEN                           healthchecks API Access ('read-only' token does not work!)" \
-           "HC_JQ                              path to jq if not in 'PATH' or not set with start argument (-j|--jq-path)" \
 		   "" \
 		   "created by gi8lino (2019)"
 	exit 0
@@ -130,7 +134,7 @@ if [ -n "${JQ_PATH}" ]; then
         exit 1
     fi
 else
-    if [ ! $(which jq) ]; then
+    if [ ! -x "$(command -v jq)" ]; then
         log "ERROR" "jq is not installed! please install jq or download binary and add path to jq to start parameter (-j|--jq-path)" $to_file
         exit 1
     fi
@@ -145,7 +149,7 @@ log "DEBUG" "duplicati backup name is '${DUPLICATI__backup_name}'" $to_file
 
 if [[ " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]] && [[ "${DUPLICATI__OPERATIONNAME}" == "Backup" ]]; then
     # get healthcheck entries
-    HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL}/api/v1/checks/")
+    HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL1%/}/api/v1/checks/")
     
     if [ ! -n "${HEALTHCHECKS_CHECKS}" ] || [ "${PING_URL}" == "null" ]; then
         log "ERROR" "cannot receive list of existing checks" $to_file
@@ -173,7 +177,7 @@ if [[ " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]] && [[ "${DUPLICATI
         log "ERROR" "cannot update healthchecks! healthchecks returned: '${result}''" $to_file
         exit 1
     fi
-    log "INFO" "${DUPLICATI__backup_name}: healthchecks successfully updated (backup: ${DUPLICATI__PARSED_RESULT})" $to_file
+    log "INFO" "healthchecks for Duplicati job '${DUPLICATI__backup_name}' successfully updated (backup status: ${DUPLICATI__PARSED_RESULT})" $to_file
 fi
 
 exit 0
