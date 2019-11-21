@@ -104,7 +104,7 @@ done
 
 if [ -n "${LOG_FILE}" ];then
     to_file=$LOG_FILE  # set path to logfile
-    log "DEBUG" "log to file ('${to_file}') enabled" $to_file
+    log "DEBUG" "log to file '${to_file}' enabled" $to_file
 fi
 
 if [ ! -n "${HEALTHCHECKS_URL}" ]; then
@@ -113,9 +113,9 @@ if [ ! -n "${HEALTHCHECKS_URL}" ]; then
         log "ERROR" "healthchecks url not found in script start parameter (-u|--url) nor in environment (HC_URL)" $to_file
         exit 1
     fi
-    log "DEUBG" "get healthchecks url '${HEALTHCHECKS_URL}' from environmentvariable 'HC_URL'" $to_file
+    log "DEBUG" "get healthchecks url '${HEALTHCHECKS_URL}' from environmentvariable 'HC_URL'" $to_file
 else
-    log "DEUBG" "get healthchecks url '${HEALTHCHECKS_URL}' from start argument" $to_file
+    log "DEBUG" "get healthchecks url '${HEALTHCHECKS_URL}' from start argument" $to_file
 fi
 
 if [ ! -n "${TOKEN}" ]; then
@@ -124,9 +124,9 @@ if [ ! -n "${TOKEN}" ]; then
         log "ERROR" "healthchecks token not found in script start parameter nor in environment (HC_TOKEN)" $to_file
         exit 1
     fi
-    log "DEUBG" "get healthchecks token '${TOKEN}' from environmentvariable 'HC_TOKEN'" $to_file
+    log "DEBUG" "get healthchecks token '${TOKEN}' from environmentvariable 'HC_TOKEN'" $to_file
 else
-    log "DEUBG" "get healthchecks token '${TOKEN}' from start argument" $to_file
+    log "DEBUG" "get healthchecks token '${TOKEN}' from start argument" $to_file
 fi
 
 if [ -n "${JQ_PATH}" ]; then
