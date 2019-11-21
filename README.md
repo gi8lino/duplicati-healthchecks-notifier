@@ -1,6 +1,9 @@
 # Duplicati Healthchecks Notifier
 Script to add as `run-script-after` in [Duplicati](https://www.duplicati.com). It notify [healthchecks](https://healthchecks.io) after running a backup job.<br>
-If the backup was not successfully, it pings to '\fail'
+If the backup was not successfully, it pings '\fail'.<br>
+
+## How it works
+The Script get a list of all existing Healthchecks checks (see [here](https://healthchecks.io/docs/api/#list-checks)). If there is a Healhcheck with the same Name as the Duplicati Job, it notify Healthchecks.
 
 ## Usage
 `dhn.sh [-u|--url URL] [-t|--token TOKEN] [-jq|--jq-path PATH] [-l|--log-file PATH] [-d|--debug] | [-h|--help] | -v|--version]`
@@ -25,3 +28,10 @@ You can also use environment variables to set the healthchecks url and token.
 * `HC_URL` - healthchecks url
 * `HC_TOKEN` - healthchecks API Access ('read-only' token does not work!)
 
+## Configuration
+### Healthchecks
+The Healthchecks Check Name must be equal the Duplicati Job Name. 
+### Duplicati
+* Goto `Setting` => `Add advanced option` => select `run-script-after: Run a script on exit`
+* Add the path to the script
+* click on `OK`

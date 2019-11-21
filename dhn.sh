@@ -9,9 +9,9 @@ function ShowHelp {
 	printf "%s\n" \
 		   "Usage: $(basename $BASH_SOURCE) [-u|--url URL] [-t|--token TOKEN] [-jq|--jq-path PATH] [-l|--log-file PATH] [-d|--debug] | [-h|--help] | [-v|--version]" \
 		   "" \
-           "Script to add as 'run-script-after' in Duplicati (https://www.duplicati.com/)." \
-           "It notify healthchecks (https://healthchecks.io/) after running a backup job." \
-           "If the backup was not successfully, it pings to '\fail'" \
+           "Script to add as 'run-script-after' in Duplicati." \
+           "It notify healthchecks after running a backup job." \
+           "If the backup was not successfully, it pings '\fail'" \
            "" \
            "Requirements:" \
            "- jq (https://stedolan.github.io/jq)" \
@@ -31,7 +31,8 @@ function ShowHelp {
            "HC_URL                             healthchecks url" \
            "HC_TOKEN                           healthchecks API Access ('read-only' token does not work!)" \
 		   "" \
-		   "created by gi8lino (2019)"
+		   "created by gi8lino (2019)" \
+           "https://github.com/gi8lino/duplicati-healthchecks"
 	exit 0
 }
 
