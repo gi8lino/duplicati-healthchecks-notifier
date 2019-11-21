@@ -10,7 +10,7 @@ function ShowHelp {
 		   "Usage: $(basename $BASH_SOURCE) [-u|--url URL] [-t|--token TOKEN] [-jq|--jq-path PATH] [-l|--log-file PATH] [-d|--debug] | [-h|--help] | [-v|--version]" \
 		   "" \
            "Script to add as 'run-script-after' in Duplicati." \
-           "It notify healthchecks after running a backup job." \
+           "It notifys healthchecks after running a backup job." \
            "If the backup was not successfully, it pings '\fail'" \
            "" \
            "Requirements:" \
@@ -136,7 +136,7 @@ if [ -n "${JQ_PATH}" ]; then
     fi
 else
     if [ ! -x "$(command -v jq)" ]; then
-        log "ERROR" "jq is not installed! please install jq or download binary and add path to jq to start parameter (-j|--jq-path)" $to_file
+        log "ERROR" "jq is not installed! please install jq or download binary and add the path as start parameter (-j|--jq-path)" $to_file
         exit 1
     fi
     JQ_PATH="jq"
@@ -148,37 +148,42 @@ log "DEBUG" "duplicati result is '${DUPLICATI__PARSED_RESULT}'" $to_file
 log "DEBUG" "duplicati operation is '${DUPLICATI__OPERATIONNAME}'" $to_file
 log "DEBUG" "duplicati backup name is '${DUPLICATI__backup_name}'" $to_file
 
-if [[ " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]] && [[ "${DUPLICATI__OPERATIONNAME}" == "Backup" ]]; then
-    # get healthcheck entries
-    HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL1%/}/api/v1/checks/")
-    
-    if [ ! -n "${HEALTHCHECKS_CHECKS}" ] || [ "${PING_URL}" == "null" ]; then
-        log "ERROR" "cannot receive list of existing checks" $to_file
-        exit 1
-    fi
-
-    # extract ping url
-    PING_URL=$(echo "${HEALTHCHECKS_CHECKS}" | ${JQ_PATH} -r ".checks[] | select(.name == \"${DUPLICATI__backup_name}\").ping_url")
-
-    if [ -z "${PING_URL}" ] || [ "${PING_URL}" == "null" ]; then
-        log "ERROR" "cannot evaluate ping url for '${DUPLICATI__backup_name}'" $to_file
-        exit 1
-    fi
-
-    if [ ${DUPLICATI__PARSED_RESULT} != "Success" ]; then
-        PING_URL="${PING_URL}/fail"
-    fi
-    
-    log "DEBUG" "get 'ping_url' '${PING_URL}'" $to_file
-    
-    result=$(curl -fsS --retry 3 "${PING_URL}")
-    log "DEBUG" "healthchecks retuned '${result}'" $to_file
-
-    if [ "${result}" != "OK" ]; then
-        log "ERROR" "cannot update healthchecks! healthchecks returned: '${result}''" $to_file
-        exit 1
-    fi
-    log "INFO" "healthchecks for Duplicati job '${DUPLICATI__backup_name}' successfully updated (backup status: ${DUPLICATI__PARSED_RESULT})" $to_file
+if [[ ! " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]]; then
+    log "DEBUG" "'${DUPLICATI__PARSED_RESULT}' is not a valid result (valid: $(IFS=\| ; echo "${RESULTS[*]}"))" $to_file
 fi
+if [[ "${DUPLICATI__OPERATIONNAME}" != "Backup" ]]; then
+    log "DEBUG" "'${DUPLICATI__OPERATIONNAME}' is not a backup job" $to_file
+    exit
+fi
+# get healthcheck entries
+HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL1%/}/api/v1/checks/")
+
+if [ ! -n "${HEALTHCHECKS_CHECKS}" ] || [ "${PING_URL}" == "null" ]; then
+    log "ERROR" "cannot receive list of existing checks" $to_file
+    exit 1
+fi
+
+# extract ping url
+PING_URL=$(echo "${HEALTHCHECKS_CHECKS}" | ${JQ_PATH} -r ".checks[] | select(.name == \"${DUPLICATI__backup_name}\").ping_url")
+
+if [ -z "${PING_URL}" ] || [ "${PING_URL}" == "null" ]; then
+    log "ERROR" "cannot evaluate ping url for '${DUPLICATI__backup_name}'" $to_file
+    exit 1
+fi
+
+if [ ${DUPLICATI__PARSED_RESULT} != "Success" ]; then
+    PING_URL="${PING_URL}/fail"
+fi
+
+log "DEBUG" "get 'ping_url' '${PING_URL}'" $to_file
+
+result=$(curl -fsS --retry 3 "${PING_URL}")
+log "DEBUG" "healthchecks retuned '${result}'" $to_file
+
+if [ "${result}" != "OK" ]; then
+    log "ERROR" "cannot update healthchecks! healthchecks returned: '${result}''" $to_file
+    exit 1
+fi
+log "INFO" "healthchecks for Duplicati job '${DUPLICATI__backup_name}' successfully updated (backup status: ${DUPLICATI__PARSED_RESULT})" $to_file
 
 exit 0
