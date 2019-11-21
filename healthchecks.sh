@@ -108,9 +108,9 @@ if [ ! -n "${HEALTHCHECKS_URL}" ]; then
         log "ERROR" "healthchecks url not found in script start parameter (-u|--url) nor in environment (HC_URL)" $to_file
         exit 1
     fi
-    log "DEUBG" "get healthchecks url '${HEALTHCHECKS_URL}' from environmentvariable 'HC_URL'" to_file
+    log "DEUBG" "get healthchecks url '${HEALTHCHECKS_URL}' from environmentvariable 'HC_URL'" $to_file
 else
-    log "DEUBG" "get healthchecks url '${HEALTHCHECKS_URL}' from start argument" to_file
+    log "DEUBG" "get healthchecks url '${HEALTHCHECKS_URL}' from start argument" $to_file
 fi
 
 if [ ! -n "${TOKEN}" ]; then
@@ -119,9 +119,9 @@ if [ ! -n "${TOKEN}" ]; then
         log "ERROR" "healthchecks token not found in script start parameter nor in environment (HC_TOKEN)" $to_file
         exit 1
     fi
-    log "DEUBG" "get healthchecks token '${TOKEN}' from environmentvariable 'HC_URL'" to_file
+    log "DEUBG" "get healthchecks token '${TOKEN}' from environmentvariable 'HC_TOKEN'" $to_file
 else
-    log "DEUBG" "get healthchecks token '${TOKEN}' from start argument" to_file
+    log "DEUBG" "get healthchecks token '${TOKEN}' from start argument" $to_file
 fi
 
 if [ -n "${JQ_PATH}" ]; then
@@ -135,14 +135,15 @@ else
         exit 1
     fi
     JQ_PATH="jq"
+    log "DEBUG" "use 'jq' from '$(which jq)'" $to_file
 fi
 log "DEBUG" "using '${JQ_PATH}'" $to_file
 
-log "DEBUG" "duplicati result is '${DUPLICATI_PARSED_RESULT}'" $to_file
-log "DEBUG" "duplicati operation is '${DUPLICATI_OPERATIONNAME}'" $to_file
+log "DEBUG" "duplicati result is '${DUPLICATI__PARSED_RESULT}'" $to_file
+log "DEBUG" "duplicati operation is '${DUPLICATI__OPERATIONNAME}'" $to_file
 log "DEBUG" "duplicati backup name is '${DUPLICATI__backup_name}'" $to_file
 
-if [[ " ${RESULTS[@]} " =~ " ${DUPLICATI_PARSED_RESULT} " ]] && [[ "${DUPLICATI_OPERATIONNAME}" == "Backup" ]]; then
+if [[ " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]] && [[ "${DUPLICATI__OPERATIONNAME}" == "Backup" ]]; then
     # get healthcheck entries
     HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL}/api/v1/checks/")
     
@@ -159,7 +160,7 @@ if [[ " ${RESULTS[@]} " =~ " ${DUPLICATI_PARSED_RESULT} " ]] && [[ "${DUPLICATI_
         exit 1
     fi
 
-    if [ ${DUPLICATI_PARSED_RESULT} != "Success" ]; then
+    if [ ${DUPLICATI__PARSED_RESULT} != "Success" ]; then
         PING_URL="${PING_URL}/fail"
     fi
     
