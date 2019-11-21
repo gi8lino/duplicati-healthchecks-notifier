@@ -79,6 +79,7 @@ while [[ $# -gt 0 ]];do
 	    ;;
         -d|--debug)
 	    DEBUG="true"
+        shift  # pass argument
 	    ;;
 	    -v|--version)
 	    printf "$(basename $BASH_SOURCE) version: %s\n" "${VERSION}"
