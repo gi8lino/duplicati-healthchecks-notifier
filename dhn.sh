@@ -130,10 +130,11 @@ else
 fi
 
 if [ -n "${JQ_PATH}" ]; then
-    if [ -f "${JQ_PATH}" ]; then
+    if [ ! -f "${JQ_PATH}" ]; then
         log "ERROR" "path to jq '${JQ_PATH}' does not exists" $to_file
         exit 1
     fi
+    log "DEBUG" "use 'jq' from '${JQ_PATH}'" $to_file
 else
     if [ ! -x "$(command -v jq)" ]; then
         log "ERROR" "'jq' is not installed! please install 'jq' or download binary and add the path as start parameter (-j|--jq-path)" $to_file
@@ -142,7 +143,6 @@ else
     JQ_PATH="jq"
     log "DEBUG" "use installed 'jq'" $to_file
 fi
-log "DEBUG" "using '${JQ_PATH}'" $to_file
 
 log "DEBUG" "duplicati result is '${DUPLICATI__PARSED_RESULT}'" $to_file
 log "DEBUG" "duplicati operation is '${DUPLICATI__OPERATIONNAME}'" $to_file
