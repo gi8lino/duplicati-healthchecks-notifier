@@ -14,17 +14,18 @@ function ShowHelp {
 		   "" \
 		   "Parameters:" \
 		   "-u, --url [URL]                     healthchecks url" \
-		   "-t, --token [TOKEN]                 healthchecks API Access ('read-only' token doesnt work!)" \
-		   "-j, --jq-path [PATH]                path to jq if not in 'PATH' or set as environment variable (HC_JQ)" \
+		   "-t, --token [TOKEN]                 healthchecks API Access ('read-only' token does not work!)" \
+		   "-j, --jq-path [PATH]                path to jq if not in 'PATH' or not set as environment variable (HC_JQ)" \
 		   "-l, --log-file [PATH]               log to file. if not set log to console" \
 		   "-d, --debug                         set log level to 'debug'" \
 		   "-h, --help                          display this help and exit" \
 		   "-v, --version                       output version information and exit" \
            "" \
            "Environment variables:" \
-           "You can also use environment variables to set the url and token" \
-           "-HC_URL                             healthchecks url" \
-           "-HC_TOKEN                           healthchecks API Access ('read-only' token does not work!)" \
+           "You can also use environment variables to set the healthchecks url and token." \
+           "HC_URL                             healthchecks url" \
+           "HC_TOKEN                           healthchecks API Access ('read-only' token does not work!)" \
+           "HC_JQ                              path to jq if not in 'PATH' or not set with start argument (-j|--jq-path)" \
 		   "" \
 		   "created by gi8lino (2019)"
 	exit 0
