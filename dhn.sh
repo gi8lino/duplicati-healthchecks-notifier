@@ -150,11 +150,12 @@ log "DEBUG" "duplicati backup name is '${DUPLICATI__backup_name}'" $to_file
 
 if [[ ! " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]]; then
     log "DEBUG" "'${DUPLICATI__PARSED_RESULT}' is not a valid result (valid: $(IFS=\| ; echo "${RESULTS[*]}"))" $to_file
+    exit 1
 fi
 
 if [[ "${DUPLICATI__OPERATIONNAME}" != "Backup" ]]; then
     log "DEBUG" "'${DUPLICATI__OPERATIONNAME}' is not a backup job" $to_file
-    exit
+    exit 1
 fi
 # get healthcheck entries
 HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL1%/}/api/v1/checks/")
