@@ -154,13 +154,13 @@ if [[ ! " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]]; then
 fi
 
 if [[ "${DUPLICATI__OPERATIONNAME}" != "Backup" ]]; then
-    log "DEBUG" "'${DUPLICATI__OPERATIONNAME}' is not a backup job" $to_file
+    log "DEBUG" "'${DUPLICATI__OPERATIONNAME}' is not a wanted operation (valid: Backup)" $to_file
     exit 1
 fi
 # get healthcheck entries
 HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL%/}/api/v1/checks/")
 
-if [ ! -n "${HEALTHCHECKS_CHECKS}" ] || [ "${PING_URL}" == "null" ]; then
+if [ ! -n "${HEALTHCHECKS_CHECKS}" ] || [ "${HEALTHCHECKS_CHECKS}" == "null" ]; then
     log "ERROR" "cannot receive list of existing checks" $to_file
     exit 1
 fi
@@ -186,6 +186,6 @@ if [ "${result}" != "OK" ]; then
     log "ERROR" "cannot update healthchecks! healthchecks returned: '${result}''" $to_file
     exit 1
 fi
-log "INFO" "healthchecks for Duplicati job '${DUPLICATI__backup_name}' successfully updated (backup status: ${DUPLICATI__PARSED_RESULT})" $to_file
+log "INFO" "healthcheck for Duplicati job '${DUPLICATI__backup_name}' successfully updated (backup status: ${DUPLICATI__PARSED_RESULT})" $to_file
 
 exit 0
