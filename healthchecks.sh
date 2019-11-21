@@ -148,7 +148,7 @@ if [[ " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]] && [[ "${DUPLICATI
     HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL}/api/v1/checks/")
     
     if [ ! -n "${HEALTHCHECKS_CHECKS}" ] || [ "${PING_URL}" == "null" ]; then
-        log "ERROR" "cannot receive list of existing checks"
+        log "ERROR" "cannot receive list of existing checks" $to_file
         exit 1
     fi
 
@@ -167,7 +167,7 @@ if [[ " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]] && [[ "${DUPLICATI
     log "DEBUG" "get 'ping_url' '${PING_URL}'" $to_file
     
     result=$(curl -fsS --retry 3 "${PING_URL}")
-    log "DEBUG" "healthchecks retuned '${result}'"
+    log "DEBUG" "healthchecks retuned '${result}'" $to_file
 
     if [ "${result}" != "OK" ]; then
         log "ERROR" "cannot update healthchecks! healthchecks returned: '${result}''" $to_file
