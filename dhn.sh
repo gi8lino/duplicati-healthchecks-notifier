@@ -26,14 +26,6 @@ function ShowHelp {
 	        "-h, --help                          display this help and exit" \
 	        "-v, --version                       output version information and exit" \
 	        "" \
-	        "Environment variables:" \
-	        "You can also use environment variables to set the healthchecks url and token." \
-	        "HC_URL                              healthchecks url" \
-	        "HC_TOKEN                            healthchecks API Access ('read-only' token does not work!)" \
-	        "HC_JQ                               healthchecks API Access ('read-only' token does not work!)" \
-	        "HC_LOG                              healthchecks API Access ('read-only' token does not work!)" \
-	        "HC_DEBUG                            healthchecks API Access ('read-only' token does not work!)" \
-	        "" \
 	        "created by gi8lino (2019)" \
 	        "https://github.com/gi8lino/duplicati-healthchecks-notifier"
 	exit 0
@@ -108,25 +100,13 @@ if [ -n "${LOG_FILE}" ];then
 fi
 
 if [ ! -n "${HEALTHCHECKS_URL}" ]; then
-    HEALTHCHECKS_URL=$(printenv HC_URL)
-    if [ ! -n "${HEALTHCHECKS_URL}" ]; then
-	    log "ERROR" "healthchecks url not found in script start parameter (-u|--url) nor in environment (HC_URL)"
-	    exit 1
-    fi
-    log "DEBUG" "get healthchecks url '${HEALTHCHECKS_URL}' from environmentvariable 'HC_URL'"
-else
-    log "DEBUG" "get healthchecks url '${HEALTHCHECKS_URL}' from start argument"
+    log "ERROR" "healthchecks url not found in script start parameter (-u|--url)"
+    exit 1
 fi
 
 if [ ! -n "${TOKEN}" ]; then
-    TOKEN=$(printenv HC_TOKEN)
-    if [ ! -n "${TOKEN}" ]; then
-        log "ERROR" "healthchecks token not found in script start parameter nor in environment (HC_TOKEN)"
-        exit 1
-    fi
-    log "DEBUG" "get healthchecks token '${TOKEN}' from environmentvariable 'HC_TOKEN'"
-else
-    log "DEBUG" "get healthchecks token '${TOKEN}' from start argument"
+    log "ERROR" "healthchecks token not found in script start parameter (-t|--token)"
+    exit 1      
 fi
 
 if [ -n "${JQ_PATH}" ]; then
