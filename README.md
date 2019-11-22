@@ -1,5 +1,5 @@
 # Duplicati Healthchecks Notifier
-Script to add as `run-script-after` in [Duplicati](https://www.duplicati.com). It notifys [healthchecks](https://healthchecks.io) after running a backup job.<br>
+Script to add as `run-script-after` in [Duplicati](https://www.duplicati.com). It notifys [Healthchecks](https://healthchecks.io) after running a backup job.<br>
 If the backup was not successfully, it pings '\fail'.<br>
 
 ## How it works
