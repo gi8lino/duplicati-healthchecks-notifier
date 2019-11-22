@@ -60,6 +60,11 @@ shopt -s nocasematch  # set string compare to not case senstive
 while [[ $# -gt 0 ]];do
     key="$1"
     case $key in
+	    -c|--config-path)
+	    CONFIG="$2"
+	    shift  # pass argument
+	    shift  # pass value
+	    ;;
 	    -u|--url)
 	    HEALTHCHECKS_URL="$2"
 	    shift  # pass argument
@@ -99,6 +104,22 @@ while [[ $# -gt 0 ]];do
 	    ;;
     esac  # end case
 done
+
+if [ -n "${CONFIG}" ]; then
+    if [ ! -f "${CONFIG}" ]; then
+        log "ERROR" "no config file found"
+        exit 1
+    fi
+fi
+if [ ! -n "${CONFIG}" ]; then
+    if [ ! -f "${CONFIG}" ]; then
+    fi
+fi
+CONFIG="$(basename $BASH_SOURCE)"
+
+
+
+
 
 if [ -n "${LOG_FILE}" ];then
     log "DEBUG" "log to file '${LOG_FILE}' enabled"
