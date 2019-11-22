@@ -6,33 +6,36 @@ RESULTS=( "Error" "Warning" "Fatal" "Unknown" "Success" )
 
 function ShowHelp {
     RESULTS=$(IFS=\| ; echo "${RESULTS[*]}")
-	printf "%s\n" \
-		   "Usage: $(basename $BASH_SOURCE) [-u|--url URL] [-t|--token TOKEN] [-jq|--jq-path PATH] [-l|--log-file PATH] [-d|--debug] | [-h|--help] | [-v|--version]" \
-		   "" \
-           "Script to add as 'run-script-after' in Duplicati." \
-           "It notifys healthchecks after running a backup job." \
-           "If the backup was not successfully, it pings '\fail'" \
-           "" \
-           "Requirements:" \
-           "- jq (https://stedolan.github.io/jq)" \
-           "You can install 'jq' or you can download it an pass the path to 'jq' with a parameter." \
-		   "" \
-		   "Parameters:" \
-		   "-u, --url [URL]                     healthchecks url" \
-		   "-t, --token [TOKEN]                 healthchecks API Access ('read-only' token does not work!)" \
-		   "-j, --jq-path [PATH]                path to 'jq' if not in 'PATH'" \
-		   "-l, --log-file [PATH]               log to file. if not set log to console" \
-		   "-d, --debug                         set log level to 'debug'" \
-		   "-h, --help                          display this help and exit" \
-		   "-v, --version                       output version information and exit" \
-           "" \
-           "Environment variables:" \
-           "You can also use environment variables to set the healthchecks url and token." \
-           "HC_URL                              healthchecks url" \
-           "HC_TOKEN                            healthchecks API Access ('read-only' token does not work!)" \
-		   "" \
-		   "created by gi8lino (2019)" \
-           "https://github.com/gi8lino/duplicati-healthchecks-notifier"
+    printf "%s\n" \
+	        "Usage: $(basename $BASH_SOURCE) [-u|--url URL] [-t|--token TOKEN] [-jq|--jq-path PATH] [-l|--log-file PATH] [-d|--debug] | [-h|--help] | [-v|--version]" \
+	        "" \
+	        "Script to add as 'run-script-after' in Duplicati." \
+	        "It notifys healthchecks after running a backup job." \
+	        "If the backup was not successfully, it pings '\fail'" \
+	        "" \
+	        "Requirements:" \
+	        "- jq (https://stedolan.github.io/jq)" \
+	        "You can install 'jq' or you can download it an pass the path to 'jq' with a parameter." \
+	        "" \
+	        "Parameters:" \
+	        "-u, --url [URL]                     healthchecks url" \
+	        "-t, --token [TOKEN]                 healthchecks API Access ('read-only' token does not work!)" \
+	        "-j, --jq-path [PATH]                path to 'jq' if not in 'PATH'" \
+	        "-l, --log-file [PATH]               log to file. if not set log to console" \
+	        "-d, --debug                         set log level to 'debug'" \
+	        "-h, --help                          display this help and exit" \
+	        "-v, --version                       output version information and exit" \
+	        "" \
+	        "Environment variables:" \
+	        "You can also use environment variables to set the healthchecks url and token." \
+	        "HC_URL                              healthchecks url" \
+	        "HC_TOKEN                            healthchecks API Access ('read-only' token does not work!)" \
+	        "HC_JQ                               healthchecks API Access ('read-only' token does not work!)" \
+	        "HC_LOG                              healthchecks API Access ('read-only' token does not work!)" \
+	        "HC_DEBUG                            healthchecks API Access ('read-only' token does not work!)" \
+	        "" \
+	        "created by gi8lino (2019)" \
+	        "https://github.com/gi8lino/duplicati-healthchecks-notifier"
 	exit 0
 }
 
@@ -60,11 +63,6 @@ shopt -s nocasematch  # set string compare to not case senstive
 while [[ $# -gt 0 ]];do
     key="$1"
     case $key in
-	    -c|--config-path)
-	    CONFIG="$2"
-	    shift  # pass argument
-	    shift  # pass value
-	    ;;
 	    -u|--url)
 	    HEALTHCHECKS_URL="$2"
 	    shift  # pass argument
@@ -80,14 +78,14 @@ while [[ $# -gt 0 ]];do
 	    shift  # pass argument
 	    shift  # pass value
 	    ;;
-        -j|--jq-path)
+	    -j|--jq-path)
 	    JQ_PATH="$2"
 	    shift  # pass argument
 	    shift  # pass value
 	    ;;
-        -d|--debug)
+	    -d|--debug)
 	    DEBUG="true"
-        shift  # pass argument
+	    shift  # pass argument
 	    ;;
 	    -v|--version)
 	    printf "$(basename $BASH_SOURCE) version: %s\n" "${VERSION}"
@@ -100,26 +98,10 @@ while [[ $# -gt 0 ]];do
 	    printf "%s\n" \
 	       "$(basename $BASH_SOURCE): invalid option -- '$1'" \
 	       "Try '$(basename $BASH_SOURCE) --help' for more information."
-        exit 1
+	    exit 1
 	    ;;
     esac  # end case
 done
-
-if [ -n "${CONFIG}" ]; then
-    if [ ! -f "${CONFIG}" ]; then
-        log "ERROR" "no config file found"
-        exit 1
-    fi
-fi
-if [ ! -n "${CONFIG}" ]; then
-    if [ ! -f "${CONFIG}" ]; then
-    fi
-fi
-CONFIG="$(basename $BASH_SOURCE)"
-
-
-
-
 
 if [ -n "${LOG_FILE}" ];then
     log "DEBUG" "log to file '${LOG_FILE}' enabled"
@@ -128,8 +110,8 @@ fi
 if [ ! -n "${HEALTHCHECKS_URL}" ]; then
     HEALTHCHECKS_URL=$(printenv HC_URL)
     if [ ! -n "${HEALTHCHECKS_URL}" ]; then
-        log "ERROR" "healthchecks url not found in script start parameter (-u|--url) nor in environment (HC_URL)"
-        exit 1
+	    log "ERROR" "healthchecks url not found in script start parameter (-u|--url) nor in environment (HC_URL)"
+	    exit 1
     fi
     log "DEBUG" "get healthchecks url '${HEALTHCHECKS_URL}' from environmentvariable 'HC_URL'"
 else
@@ -149,14 +131,14 @@ fi
 
 if [ -n "${JQ_PATH}" ]; then
     if [ ! -f "${JQ_PATH}" ]; then
-        log "ERROR" "path to jq '${JQ_PATH}' does not exists"
-        exit 1
+	    log "ERROR" "path to jq '${JQ_PATH}' does not exists"
+	    exit 1
     fi
     log "DEBUG" "use 'jq' from '${JQ_PATH}'"
 else
     if [ ! -x "$(command -v jq)" ]; then
-        log "ERROR" "'jq' is not installed! please install 'jq' or download binary and add the path as start parameter (-j|--jq-path)"
-        exit 1
+	    log "ERROR" "'jq' is not installed! please install 'jq' or download binary and add the path as start parameter (-j|--jq-path)"
+	    exit 1
     fi
     JQ_PATH="jq"
     log "DEBUG" "use installed 'jq'"
