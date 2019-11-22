@@ -23,10 +23,6 @@ If you want use parameters, you have to create a separate script. Duplicati cann
 #!/bin/bash
 /opt/duplicati-healthchecks-notifier/dhn.sh -d -l /var/log/duplicati/dhn.log
 ```
-## Environment variables
-You can also use environment variables to set the healthchecks url and token.
-* `HC_URL` - healthchecks url
-* `HC_TOKEN` - healthchecks API Access ('read-only' token does not work!)
 
 ## Configuration
 ### Healthchecks
