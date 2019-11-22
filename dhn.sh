@@ -146,12 +146,12 @@ log "DEBUG" "duplicati operation is '${DUPLICATI__OPERATIONNAME}'"
 log "DEBUG" "duplicati backup name is '${DUPLICATI__backup_name}'"
 
 if [[ ! " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]]; then
-    log "DEBUG" "'${DUPLICATI__PARSED_RESULT}' is not a valid result (valid: $(IFS=\| ; echo "${RESULTS[*]}"))"
+    log "ERROR" "'${DUPLICATI__PARSED_RESULT}' is not a valid result (valid: $(IFS=\| ; echo "${RESULTS[*]}"))"
     exit 1
 fi
 
 if [[ "${DUPLICATI__OPERATIONNAME}" != "Backup" ]]; then
-    log "DEBUG" "'${DUPLICATI__OPERATIONNAME}' is not a wanted operation (valid: Backup)"
+    log "ERROR" "'${DUPLICATI__OPERATIONNAME}' is not a wanted operation (valid: Backup)"
     exit 1
 fi
 # get healthcheck entries
