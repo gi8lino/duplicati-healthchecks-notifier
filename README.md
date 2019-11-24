@@ -22,7 +22,7 @@ Because you cannot pass arguments in Duplicati, you need to create a additional 
 ``` bash
 #!/bin/bash
 
-TOKEN=$(printenv HC_TOKEN)  # get Healthchecks token from environment
+TOKEN=$(printenv HC_TOKEN)  # get Healthchecks token from environment variable 'HC_TOKEN'
 URL="https://healthchecks.example.com"
 /opt/duplicati-healthchecks-notifier/dhn.sh -d -l /var/log/duplicati/dhn.log -t $TOKEN -u $URL
 ```
