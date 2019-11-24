@@ -17,11 +17,14 @@ The Script gets a list of all existing Healthchecks checks. If there is a Healhc
 * `-h|--help` - display this help and exit
 * `-v|--version` - output version information and exit
 
-If you want use parameters, you have to create a separate script. Duplicati cannot pass arguments.
+Because you cannot pass arguments in Duplicati, you need to create a additional script.
 ### Example
 ``` bash
 #!/bin/bash
-/opt/duplicati-healthchecks-notifier/dhn.sh -d -l /var/log/duplicati/dhn.log
+
+TOKEN=$(printenv HC_TOKEN)  # get Healthchecks token from environment
+URL="https://healthchecks.example.com"
+/opt/duplicati-healthchecks-notifier/dhn.sh -d -l /var/log/duplicati/dhn.log -t $TOKEN -u $URL
 ```
 
 ## Configuration
