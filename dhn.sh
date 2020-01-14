@@ -1,8 +1,9 @@
 #!/bin/bash
 set -o errexit
 
-VERSION="0.0.1"
+VERSION="0.0.2"
 RESULTS=( "Error" "Warning" "Fatal" "Unknown" "Success" )
+ALLOWED_OPERATIONS=("Backup")
 
 function ShowHelp {
     RESULTS=$(IFS=\| ; echo "${RESULTS[*]}")
@@ -18,13 +19,18 @@ function ShowHelp {
 	        "You can install 'jq' or you can download it an pass the path to 'jq' with a parameter." \
 	        "" \
 	        "Parameters:" \
-	        "-u, --url [URL]                     healthchecks url" \
-	        "-t, --token [TOKEN]                 healthchecks API Access ('read-only' token does not work!)" \
-	        "-j, --jq-path [PATH]                path to 'jq' if not in '\$PATH'" \
-	        "-l, --log-file [PATH]               log to file. if not set log to console" \
-	        "-d, --debug                         set log level to 'debug'" \
-	        "-h, --help                          display this help and exit" \
-	        "-v, --version                       output version information and exit" \
+	        "-u, --url [URL]                            healthchecks url" \
+	        "-t, --token [TOKEN]                        healthchecks API Access ('read-only' token does not work!)" \
+	        "-j, --jq-path [PATH]                       path to 'jq' if not in '\$PATH'" \
+	        "-a, --allowed-operations \"[Type] ...\"      only notify if types of operations match" \
+	        "                                           list of strings, separatet by a space (not case sensitive)" \
+	        "                                           example: -a \"Backup\"" \
+	        "                                           default: Backup" \
+	        "-s, --send-sart                            notify healthchecks when operation starts" \
+	        "-l, --log-file [PATH]                      log to file. if not set log to console" \
+	        "-d, --debug                                set log level to 'debug'" \
+	        "-h, --help                                 display this help and exit" \
+	        "-v, --version                              output version information and exit" \
 	        "" \
 	        "created by gi8lino (2019)" \
 	        "https://github.com/gi8lino/duplicati-healthchecks-notifier"
@@ -64,6 +70,15 @@ while [[ $# -gt 0 ]];do
 	    TOKEN="$2"
 	    shift  # pass argument
 	    shift  # pass value
+	    ;;
+	    -a|--allowed-operations)
+	    ALLOWED_OPERATIONS="$2"
+	    shift  # pass argument
+	    shift  # pass value
+	    ;;
+	    -s|--send-sart)
+	    SEND_START=true
+	    shift  # pass argument
 	    ;;
 	    -l|--log-file)
 	    LOG_FILE="$2"
@@ -133,10 +148,20 @@ if [[ ! " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]]; then
     exit 1
 fi
 
-if [[ "${DUPLICATI__OPERATIONNAME}" != "Backup" ]]; then
-    log "ERROR" "'${DUPLICATI__OPERATIONNAME}' is not a wanted operation (valid: Backup)"
-    exit 1
+# check if operation is allowed
+for item in "${ALLOWED_OPERATIONS[@]}"; do
+    if [[ " ${RESULTS[@]} " =~ " ${item} " ]]; then
+        log "INFO" "'${DUPLICATI__OPERATIONNAME}' is a wanted operation"
+        OPERATION_IS_VALID=true
+        break
+    fi
+done
+
+if [ -z "$OPERATION_IS_VALID" ]; then
+    log "WARNING" "'${DUPLICATI__OPERATIONNAME}' is not a wanted operation. exit"
+    exit 0
 fi
+
 # get healthcheck entries
 HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL%/}/api/v1/checks/")
 
@@ -153,10 +178,13 @@ if [ -z "${PING_URL}" ] || [ "${PING_URL}" == "null" ]; then
     exit 1
 fi
 
-if [ ${DUPLICATI__PARSED_RESULT} != "Success" ]; then
+if [ -z $"SEND_START" ] && [ $DUPLICATI__EVENTNAME = "BEFORE" ]; then
+    # update url if event is before and -s|--send-start parameter was set
+    PING_URL="${PING_URL}/start"
+elif [ ${DUPLICATI__PARSED_RESULT} != "Success" ]; then
+    # update url if job was not successfull
     PING_URL="${PING_URL}/fail"
 fi
-
 log "DEBUG" "get 'ping_url' '${PING_URL}'"
 
 result=$(curl -fsS --retry 3 "${PING_URL}")
