@@ -3,7 +3,7 @@ set -o errexit
 
 VERSION="0.0.2"
 RESULTS=( "Error" "Warning" "Fatal" "Unknown" "Success" )
-ALLOWED_OPERATIONS=("Backup")
+ALLOWED_OPERATIONS=( "Backup" )
 
 function ShowHelp {
     RESULTS=$(IFS=\| ; echo "${RESULTS[*]}")
