@@ -28,18 +28,28 @@ function ShowHelp {
 	        "You can install 'jq' or you can download it an pass the path to 'jq' with a parameter." \
 	        "" \
 	        "Parameters:" \
-	        "-u, --url [URL]                            healthchecks url" \
-	        "-t, --token [TOKEN]                        healthchecks API Access ('read-only' token does not work!)" \
+	        "-u, --url [URL]                            Healthchecks url" \
+	        "-t, --token [TOKEN]                        Healthchecks API Access ('read-only' token does not work!)" \
 	        "-a, --allowed-operations \"[Type] ...\"      only notify if types of operations match" \
 	        "                                           list of strings, separatet by a space (not case sensitive)" \
 	        "                                           default: Backup" \
-	        "-s, --send-start                           notify healthchecks when operation starts" \
+	        "-s, --send-start                           notify Healthchecks when operation starts" \
 	        "-j, --jq-path [PATH]                       path to 'jq' if not in '\$PATH'" \
 	        "-l, --log-file [PATH]                      log to file. if not set log to console" \
 	        "-d, --debug                                set log level to 'debug'" \
 	        "-h, --help                                 display this help and exit" \
 	        "-v, --version                              output version information and exit" \
 	        "" \
+			"Healthchecks configuration:" \
+			"The Healthchecks check name has to be equal to the Duplicati job name." \
+			"" \
+			"Duplicati configuration:" \
+			"Goto 'Settings' => 'Add advanced option' => select 'run-script-after: Run a script on exit'" \
+			"Add the path to the script" \
+			"click on 'OK'" \
+			"" \
+			"To notify when Duplicati starts add 'run-script-before: Run a script on startup'" \
+			"" \
 			"examples:" \
 			"./dhn.sh -u https://healthchecks.example.com -t <TOKEN> -l dhn.log" \
 			"./dhn.sh -u https://healthchecks.example.com -t <TOKEN> -a \"Backup Restore\" -s -l dhn.log" \
