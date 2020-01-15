@@ -8,9 +8,13 @@ ALLOWED_OPERATIONS=( "Backup" )
 function ShowHelp {
     RESULTS=$(IFS=\| ; echo "${RESULTS[*]}")
     printf "%s\n" \
-	        "Usage: $(basename $BASH_SOURCE) [-u|--url URL] [-t|--token TOKEN] [-a|--allowed-operations \"TYPE ...\"" \
-			"								 [-jq|--jq-path PATH] [-s|--send-start] [-l|--log-file PATH]" \
-			" 								 [-d|--debug] | [-h|--help] | [-v|--version]" \
+	        "Usage: dhn.sh [-u|--url URL]" \
+			"              [-t|--token TOKEN]" \
+			"              [-a|--allowed-operations \"TYPE ...\"]" \
+			"              [-s|--send-start]" \
+			"              [-jq|--jq-path PATH] " \
+			"              [-l|--log-file PATH]" \
+			"              [-d|--debug] | [-h|--help] | [-v|--version]" \
 	        "" \
 			"Script to add as 'run-script-before' and/or 'run-script-after' in Duplicati (https://www.duplicati.com)." \
 			"To measuring the Duplicati job execution time use this script as 'run-script-before' in Duplicati and " \
