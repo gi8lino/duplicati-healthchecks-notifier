@@ -30,11 +30,11 @@ function ShowHelp {
 	        "Parameters:" \
 	        "-u, --url [URL]                            healthchecks url" \
 	        "-t, --token [TOKEN]                        healthchecks API Access ('read-only' token does not work!)" \
-	        "-j, --jq-path [PATH]                       path to 'jq' if not in '\$PATH'" \
 	        "-a, --allowed-operations \"[Type] ...\"      only notify if types of operations match" \
 	        "                                           list of strings, separatet by a space (not case sensitive)" \
 	        "                                           default: Backup" \
-	        "-s, --send-sart                            notify healthchecks when operation starts" \
+	        "-s, --send-start                           notify healthchecks when operation starts" \
+	        "-j, --jq-path [PATH]                       path to 'jq' if not in '\$PATH'" \
 	        "-l, --log-file [PATH]                      log to file. if not set log to console" \
 	        "-d, --debug                                set log level to 'debug'" \
 	        "-h, --help                                 display this help and exit" \
