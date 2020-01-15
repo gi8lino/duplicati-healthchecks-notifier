@@ -139,27 +139,20 @@ else
     log "DEBUG" "use installed 'jq'"
 fi
 
-log "DEBUG" "duplicati result is '${DUPLICATI__PARSED_RESULT}'"
+log "DEBUG" "duplicati parsed result is '${DUPLICATI__PARSED_RESULT}'"
 log "DEBUG" "duplicati operation is '${DUPLICATI__OPERATIONNAME}'"
 log "DEBUG" "duplicati backup name is '${DUPLICATI__backup_name}'"
+log "DEBUG" "duplicati event name is '${DUPLICATI__EVENTNAME}'"
 
-if [[ ! " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]]; then
+if [ -n "${DUPLICATI__PARSED_RESULT}" ]  &&  [ ! " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]]; then
     log "ERROR" "'${DUPLICATI__PARSED_RESULT}' is not a valid result (valid: $(IFS=\| ; echo "${RESULTS[*]}"))"
     exit 1
 fi
 
 # check if operation is allowed
-for item in "${ALLOWED_OPERATIONS[@]}"; do
-    if [[ " ${RESULTS[@]} " =~ " ${item} " ]]; then
-        log "INFO" "'${DUPLICATI__OPERATIONNAME}' is a wanted operation"
-        OPERATION_IS_VALID=true
-        break
-    fi
-done
-
-if [ -z "$OPERATION_IS_VALID" ]; then
+if [[ ! " ${ALLOWED_OPERATIONS[@]} " =~ " ${DUPLICATI__OPERATIONNAME} " ]]; then
     log "WARNING" "'${DUPLICATI__OPERATIONNAME}' is not a wanted operation. exit"
-    exit 0
+    exit
 fi
 
 # get healthcheck entries
@@ -178,11 +171,12 @@ if [ -z "${PING_URL}" ] || [ "${PING_URL}" == "null" ]; then
     exit 1
 fi
 
-if [ -z $"SEND_START" ] && [ $DUPLICATI__EVENTNAME = "BEFORE" ]; then
+if [ $DUPLICATI__EVENTNAME == "BEFORE" ]; then
     # update url if event is before and -s|--send-start parameter was set
     PING_URL="${PING_URL}/start"
-elif [ ${DUPLICATI__PARSED_RESULT} != "Success" ]; then
+elif [ "${DUPLICATI__PARSED_RESULT}" != "Success" ]; then
     # update url if job was not successfull
+    log "ERROR" "fail"
     PING_URL="${PING_URL}/fail"
 fi
 log "DEBUG" "get 'ping_url' '${PING_URL}'"
@@ -194,6 +188,6 @@ if [ "${result}" != "OK" ]; then
     log "ERROR" "cannot update healthchecks! healthchecks returned: '${result}''"
     exit 1
 fi
-log "INFO" "healthcheck for Duplicati job '${DUPLICATI__backup_name}' successfully updated (backup status: ${DUPLICATI__PARSED_RESULT})"
+log "INFO" "healthcheck for Duplicati job '${DUPLICATI__backup_name}' successfully updated"
 
-exit 0
+exit
