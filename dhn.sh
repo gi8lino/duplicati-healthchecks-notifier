@@ -57,6 +57,7 @@ function log() {
 }
 
 shopt -s nocasematch  # set string compare to not case senstive
+
 # read start parameter
 while [[ $# -gt 0 ]];do
     key="$1"
@@ -144,7 +145,7 @@ log "DEBUG" "duplicati operation is '${DUPLICATI__OPERATIONNAME}'"
 log "DEBUG" "duplicati backup name is '${DUPLICATI__backup_name}'"
 log "DEBUG" "duplicati event name is '${DUPLICATI__EVENTNAME}'"
 
-if [ -n "${DUPLICATI__PARSED_RESULT}" ]  &&  [ ! " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]]; then
+if [ -n "${DUPLICATI__PARSED_RESULT}" ]  &&  [[ ! " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]]; then
     log "ERROR" "'${DUPLICATI__PARSED_RESULT}' is not a valid result (valid: $(IFS=\| ; echo "${RESULTS[*]}"))"
     exit 1
 fi
@@ -152,7 +153,7 @@ fi
 # check if operation is allowed
 if [[ ! " ${ALLOWED_OPERATIONS[@]} " =~ " ${DUPLICATI__OPERATIONNAME} " ]]; then
     log "WARNING" "'${DUPLICATI__OPERATIONNAME}' is not a wanted operation. exit"
-    exit
+    exit 0
 fi
 
 # get healthcheck entries
@@ -185,9 +186,9 @@ result=$(curl -fsS --retry 3 "${PING_URL}")
 log "DEBUG" "healthchecks retuned '${result}'"
 
 if [ "${result}" != "OK" ]; then
-    log "ERROR" "cannot update healthchecks! healthchecks returned: '${result}''"
+    log "ERROR" "cannot update healthchecks! healthchecks returned '${result}'"
     exit 1
 fi
-log "INFO" "healthcheck for Duplicati job '${DUPLICATI__backup_name}' successfully updated"
 
-exit
+log "INFO" "healthcheck for Duplicati job '${DUPLICATI__backup_name}' successfully updated"
+exit 0
