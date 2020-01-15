@@ -8,7 +8,7 @@ ALLOWED_OPERATIONS=( "Backup" )
 function ShowHelp {
     RESULTS=$(IFS=\| ; echo "${RESULTS[*]}")
     printf "%s\n" \
-	        "Usage: $(basename $BASH_SOURCE) [-u|--url URL] [-t|--token TOKEN] [-jq|--jq-path PATH] [-l|--log-file PATH] [-d|--debug] | [-h|--help] | [-v|--version]" \
+	        "Usage: $(basename $BASH_SOURCE) [-u|--url URL] [-t|--token TOKEN] [-jq|--jq-path PATH] [-a|--allowed-operations \"TYPE ...\" [-s|--send-start] [-l|--log-file PATH] [-d|--debug] | [-h|--help] | [-v|--version]" \
 	        "" \
 	        "Script to add as 'run-script-after' in Duplicati." \
 	        "It notifys healthchecks after running a backup job." \
@@ -24,7 +24,6 @@ function ShowHelp {
 	        "-j, --jq-path [PATH]                       path to 'jq' if not in '\$PATH'" \
 	        "-a, --allowed-operations \"[Type] ...\"      only notify if types of operations match" \
 	        "                                           list of strings, separatet by a space (not case sensitive)" \
-	        "                                           example: -a \"Backup\"" \
 	        "                                           default: Backup" \
 	        "-s, --send-sart                            notify healthchecks when operation starts" \
 	        "-l, --log-file [PATH]                      log to file. if not set log to console" \
@@ -32,7 +31,10 @@ function ShowHelp {
 	        "-h, --help                                 display this help and exit" \
 	        "-v, --version                              output version information and exit" \
 	        "" \
-	        "created by gi8lino (2019)" \
+			"examples:" \
+			"./dhn.sh -u https://healthchecks.example.com -t <TOKEN> -a \"\" -s -l dhn.log" \
+			"" \
+	        "created by gi8lino (2020)" \
 	        "https://github.com/gi8lino/duplicati-healthchecks-notifier"
 	exit 0
 }
@@ -173,11 +175,10 @@ if [ -z "${PING_URL}" ] || [ "${PING_URL}" == "null" ]; then
 fi
 
 if [ $DUPLICATI__EVENTNAME == "BEFORE" ]; then
-    # update url if event is before and -s|--send-start parameter was set
     PING_URL="${PING_URL}/start"
 elif [ "${DUPLICATI__PARSED_RESULT}" != "Success" ]; then
-    # update url if job was not successfull
-    log "ERROR" "fail"
+    # update url if job was NOT successfull
+    log "ERROR" "Duplicati job status is '${DUPLICATI__PARSED_RESULT}'"
     PING_URL="${PING_URL}/fail"
 fi
 log "DEBUG" "get 'ping_url' '${PING_URL}'"
@@ -191,4 +192,5 @@ if [ "${result}" != "OK" ]; then
 fi
 
 log "INFO" "healthcheck for Duplicati job '${DUPLICATI__backup_name}' successfully updated"
+
 exit 0
