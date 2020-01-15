@@ -98,7 +98,7 @@ while [[ $# -gt 0 ]];do
 	    shift  # pass argument
 	    ;;
 	    -v|--version)
-	    printf "$(basename $BASH_SOURCE) version: %s\n" "${VERSION}"
+	    printf "duplicati-healthchecks-notifier version: %s\n" "${VERSION}"
 	    exit 0
 	    ;;
 	    -h|--help)
