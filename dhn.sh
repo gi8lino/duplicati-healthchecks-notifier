@@ -50,7 +50,7 @@ function ShowHelp {
 			"" \
 			"To notify when Duplicati starts add 'run-script-before: Run a script on startup'" \
 			"" \
-			"examples:" \
+			"Examples:" \
 			"./dhn.sh -u https://healthchecks.example.com -t <TOKEN> -l dhn.log" \
 			"./dhn.sh -u https://healthchecks.example.com -t <TOKEN> -a \"Backup Restore\" -s -l dhn.log" \
 			"" \
