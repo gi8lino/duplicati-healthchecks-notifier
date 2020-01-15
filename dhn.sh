@@ -8,12 +8,17 @@ ALLOWED_OPERATIONS=( "Backup" )
 function ShowHelp {
     RESULTS=$(IFS=\| ; echo "${RESULTS[*]}")
     printf "%s\n" \
-	        "Usage: $(basename $BASH_SOURCE) [-u|--url URL] [-t|--token TOKEN] [-jq|--jq-path PATH] [-a|--allowed-operations \"TYPE ...\" [-s|--send-start] [-l|--log-file PATH] [-d|--debug] | [-h|--help] | [-v|--version]" \
+	        "Usage: $(basename $BASH_SOURCE) [-u|--url URL] [-t|--token TOKEN] [-a|--allowed-operations \"TYPE ...\"" \
+			"								 [-jq|--jq-path PATH] [-s|--send-start] [-l|--log-file PATH]" \
+			" 								 [-d|--debug] | [-h|--help] | [-v|--version]" \
 	        "" \
-	        "Script to add as 'run-script-after' in Duplicati." \
-	        "It notifys healthchecks after running a backup job." \
-	        "If the backup was not successfully, it pings '\fail'" \
-	        "" \
+			"Script to add as 'run-script-before' and/or 'run-script-after' in Duplicati (https://www.duplicati.com)." \
+			"To measuring the Duplicati job execution time use this script as 'run-script-before' in Duplicati and " \
+			"start this script with the parameter '-s|--send-start'. The script will append " \
+			"'/start' to the Healthchecks ping url." \
+	        "To signal Healthchecks a Duplicati 'Success' event add this script as 'run-script-after' in Duplicati." \
+	        "If the Duplicati job was not successfully, it pings Healthchecks with '/fail'." \
+			"" \
 	        "Requirements:" \
 	        "- jq (https://stedolan.github.io/jq)" \
 	        "You can install 'jq' or you can download it an pass the path to 'jq' with a parameter." \
@@ -32,7 +37,8 @@ function ShowHelp {
 	        "-v, --version                              output version information and exit" \
 	        "" \
 			"examples:" \
-			"./dhn.sh -u https://healthchecks.example.com -t <TOKEN> -a \"\" -s -l dhn.log" \
+			"./dhn.sh -u https://healthchecks.example.com -t <TOKEN> -l dhn.log" \
+			"./dhn.sh -u https://healthchecks.example.com -t <TOKEN> -a \"Backup Restore\" -s -l dhn.log" \
 			"" \
 	        "created by gi8lino (2020)" \
 	        "https://github.com/gi8lino/duplicati-healthchecks-notifier"
@@ -45,7 +51,7 @@ function log() {
     local _level=$1
     local _text=$2
 
-    local _current=`date '+%Y-%m-%d %H:%M:%S'`
+    local _current=$(date '+%Y-%m-%d %H:%M:%S')
 
     if [ ${_level} == "DEBUG" ] && [ -z "${DEBUG}" ]; then
         return
