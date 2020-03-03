@@ -1,7 +1,7 @@
 #!/bin/bash
 set -o errexit
 
-VERSION="0.0.3"
+VERSION="0.0.4"
 RESULTS=( "Error" "Warning" "Fatal" "Unknown" "Success" )
 ALLOWED_OPERATIONS=( "Backup" )
 
