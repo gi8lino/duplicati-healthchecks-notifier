@@ -195,7 +195,7 @@ if [ -z "${PING_URL}" ] || [ "${PING_URL}" == "null" ]; then
 fi
 
 if [ $DUPLICATI__EVENTNAME == "BEFORE" ]; then
-    PING_URL="${PING_URL}/start"
+    [ -n "$SEND_START" ] && PING_URL="${PING_URL}/start"
 elif [ "${DUPLICATI__PARSED_RESULT}" != "Success" ]; then
     # update url if job was NOT successfull
     log "ERROR" "Duplicati job status is '${DUPLICATI__PARSED_RESULT}'"
