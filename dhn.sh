@@ -99,7 +99,7 @@ while [[ $# -gt 0 ]];do
 	    shift  # pass argument
 	    shift  # pass value
 	    ;;
-	    -s|--send-sart)
+	    -s|--send-start)
 	    SEND_START=true
 	    shift  # pass argument
 	    ;;
