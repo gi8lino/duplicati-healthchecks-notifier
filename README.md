@@ -7,11 +7,20 @@ If the Duplicati job was not successfully, it pings Healthchecks with `/fail`.
 
 ## How it works
 
-The Script gets a list of all existing Healthchecks checks. If there is a Healhcheck with the same name as the Duplicati job, it notifys Healthchecks.
+The Script gets a list of all existing Healthchecks checks. If there is a Healhcheck with the same name as the Duplicati job, it notifies Healthchecks.
 
 ## Usage
 
-`dhn.sh [-u|--url URL] [-t|--token TOKEN] [-a|--allowed-operations "TYPE ..."] [-s|--send-start] [-jq|--jq-path PATH] [-l|--log-file PATH] [-d|--debug] | [-h|--help] | -v|--version]`
+```bash
+dhn.sh [-u|--url URL]
+       [-t|--token TOKEN]
+       [-a|--allowed-operations "TYPE ..."]
+       [-jq|--jq-path PATH]
+       [-l|--log-file PATH]
+       [-s|--send-start]
+       [-p|--prefix [PREFIX]]
+       [-d|--debug] | -v|--version] | [-h|--help]
+```
 
 ## Parameters
 
@@ -20,12 +29,13 @@ The Script gets a list of all existing Healthchecks checks. If there is a Healhc
 | `-u|--url [URL]`                       | Healthchecks url                                                 |
 | `-t|--token [TOKEN]`                   | Healthchecks API Access token ('read-only' token does not work!) |
 | `-a|--allowed-operations "[TYPE] ..."` | only notify if types of operations match list of strings         |
-| `-s|--send-start`                      | notify Healthchecks when operation starts                        |
 | `-j|--jq-path [PATH]`                  | path to jq if not in '$PATH'                                     |
-| `-l|--log-file [PATH]`                 | log to file. if not set log to console                           |
+| `-l|--log-file [PATH]`                 | log to file. if not set log to console (optional)                |
+| `-s|--send-start`                      | notify Healthchecks when operation starts (optional)             |
+| `-p|--prefix [TOKEN]`                  | prefix for Healthcheck job name (optional)                       |
 | `-d|--debug`                           | set log level to 'debug'                                         |
-| `-h|--help`                            | display this help and exit                                       |
 | `-v|--version`                         | output version information and exit                              |
+| `-h|--help`                            | display this help and exit                                       |
 
 Because you cannot pass arguments in Duplicati, you need to create a additional script.
 
