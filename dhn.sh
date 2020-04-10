@@ -1,7 +1,7 @@
 #!/bin/bash
 set -o errexit
 
-VERSION="0.0.4"
+VERSION="0.0.5"
 RESULTS=( "Error" "Warning" "Fatal" "Unknown" "Success" )
 ALLOWED_OPERATIONS=( "Backup" )
 
@@ -12,6 +12,7 @@ function ShowHelp {
 			"              [-t|--token TOKEN]" \
 			"              [-a|--allowed-operations \"TYPE ...\"]" \
 			"              [-s|--send-start]" \
+			"              [-p|--prefix] [PREFIX]"  \
 			"              [-jq|--jq-path PATH] " \
 			"              [-l|--log-file PATH]" \
 			"              [-d|--debug] | [-h|--help] | [-v|--version]" \
@@ -34,8 +35,9 @@ function ShowHelp {
 	        "                                           list of strings, separatet by a space (not case sensitive)" \
 	        "                                           default: Backup" \
 	        "-s, --send-start                           notify Healthchecks when operation starts" \
-	        "-j, --jq-path [PATH]                       path to 'jq' if not in '\$PATH'" \
-	        "-l, --log-file [PATH]                      log to file. if not set log to console" \
+			"-p, --prefix [PREFIX]                      prefix for Healthcheck job name (otional)" \
+	        "-j, --jq-path [PATH]                       path to 'jq' if not in '\$PATH' (otional)" \
+	        "-l, --log-file [PATH]                      log to file. if not set log to console (otional)" \
 	        "-d, --debug                                set log level to 'debug'" \
 	        "-h, --help                                 display this help and exit" \
 	        "-v, --version                              output version information and exit" \
@@ -96,6 +98,11 @@ while [[ $# -gt 0 ]];do
 	    ;;
 	    -a|--allowed-operations)
 	    ALLOWED_OPERATIONS="$2"
+	    shift  # pass argument
+	    shift  # pass value
+	    ;;
+		-p|--prefix)
+	    PREFIX="$2"
 	    shift  # pass argument
 	    shift  # pass value
 	    ;;
@@ -187,7 +194,7 @@ if [ ! -n "${HEALTHCHECKS_CHECKS}" ] || [ "${HEALTHCHECKS_CHECKS}" == "null" ]; 
 fi
 
 # extract ping url
-PING_URL=$(echo "${HEALTHCHECKS_CHECKS}" | ${JQ_PATH} -r ".checks[] | select(.name == \"${DUPLICATI__backup_name}\").ping_url")
+PING_URL=$(echo "${HEALTHCHECKS_CHECKS}" | ${JQ_PATH} -r ".checks[] | select(.name == \"$PREFIX${DUPLICATI__backup_name}\").ping_url")
 
 if [ -z "${PING_URL}" ] || [ "${PING_URL}" == "null" ]; then
     log "ERROR" "cannot evaluate ping url for '${DUPLICATI__backup_name}'"
