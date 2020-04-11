@@ -199,8 +199,7 @@ if [ ! -n "${HEALTHCHECKS_CHECKS}" ] || [ "${HEALTHCHECKS_CHECKS}" == "null" ]; 
 fi
 
 # extract ping url
-PING_URL=$(echo "${HEALTHCHECKS_CHECKS}" | ${JQ_PATH} -r ".checks[] | select(.name == \"$PREFIX${DUPLICATI__backup_name}\").ping_url")
-
+PING_URL=$(echo "${HEALTHCHECKS_CHECKS}" | ${JQ} -r ".checks[] | select(.name == \"$PREFIX${DUPLICATI__backup_name}\").ping_url")
 if [ -z "${PING_URL}" ] || [ "${PING_URL}" == "null" ]; then
     log "ERROR" "cannot evaluate ping url for '${DUPLICATI__backup_name}'"
     exit 1
