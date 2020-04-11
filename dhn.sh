@@ -154,18 +154,23 @@ if [ ! -n "${TOKEN}" ]; then
     exit 1      
 fi
 
-if [ -n "${JQ_PATH}" ]; then
-    if [ ! -f "${JQ_PATH}" ]; then
+if [ ! -z "${JQ}" ]; then
+    if [ ! -f "${JQ}" ]; then
 	    log "ERROR" "path to jq '${JQ_PATH}' does not exists"
 	    exit 1
     fi
     log "DEBUG" "use 'jq' from '${JQ_PATH}'"
 else
     if [ ! -x "$(command -v jq)" ]; then
-	    log "ERROR" "'jq' is not installed! please install 'jq' or download binary and add the path as start parameter (-j|--jq-path)"
-	    exit 1
+        if [ -f "./jq-linux64" ]; then
+            JQ="./jq-linux64"
+            log "DEBUG" "us local jq './jq-linux64'"
+        else
+	        log "ERROR" "'jq' is not installed! please install 'jq' or download binary and add the path as start parameter (-j|--jq-path)"
+	        exit 1
+        fi
     fi
-    JQ_PATH="jq"
+    JQ="jq"
     log "DEBUG" "use installed 'jq'"
 fi
 
