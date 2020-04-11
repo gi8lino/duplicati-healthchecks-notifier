@@ -69,14 +69,14 @@ function log() {
 
     local _current=$(date '+%Y-%m-%d %H:%M:%S')
 
-    if [ ${_level} == "DEBUG" ] && [ -z "${DEBUG}" ]; then
+    if [[ "$_level" =~ *"DEBUG"* ]] && [ -z "${DEBUG}" ]; then
         return
     fi
 
     if [ -n "${LOG_FILE}" ];then
-        echo "${_current}; ${_level}; ${_text}" >> "${LOG_FILE}"
+        echo "$_current $_level $_text" >> "${LOG_FILE}"
     else
-        echo "${_current}; ${_level}; ${_text}"
+        echo "$_current $_level $_text"
     fi
 }
 
@@ -141,52 +141,52 @@ while [[ $# -gt 0 ]];do
 done
 
 if [ -n "${LOG_FILE}" ];then
-    log "DEBUG" "log to file '${LOG_FILE}' enabled"
+    log "[DEBUG  ]" "log to file '${LOG_FILE}' enabled"
 fi
 
 if [ ! -n "${HEALTHCHECKS_URL}" ]; then
-    log "ERROR" "healthchecks url not found in script start parameter (-u|--url)"
+    log "[ERROR  ]" "healthchecks url not found in script start parameter (-u|--url)"
     exit 1
 fi
 
 if [ ! -n "${TOKEN}" ]; then
-    log "ERROR" "healthchecks token not found in script start parameter (-t|--token)"
+    log "[ERROR  ]" "healthchecks token not found in script start parameter (-t|--token)"
     exit 1      
 fi
 
 if [ ! -z "${JQ}" ]; then
     if [ ! -f "${JQ}" ]; then
-	    log "ERROR" "path to jq '${JQ_PATH}' does not exists"
+	    log "[ERROR  ]" "path to jq '${JQ_PATH}' does not exists"
 	    exit 1
     fi
-    log "DEBUG" "use 'jq' from '${JQ_PATH}'"
+    log "[DEBUG  ]" "use 'jq' from '${JQ_PATH}'"
 else
     if [ ! -x "$(command -v jq)" ]; then
         if [ -f "./jq-linux64" ]; then
             JQ="./jq-linux64"
-            log "DEBUG" "us local jq './jq-linux64'"
+            log "[DEBUG  ]" "us local jq './jq-linux64'"
         else
-	        log "ERROR" "'jq' is not installed! please install 'jq' or download binary and add the path as start parameter (-j|--jq-path)"
+	        log "[ERROR  ]" "'jq' is not installed! please install 'jq' or download binary and add the path as start parameter (-j|--jq-path)"
 	        exit 1
         fi
     fi
     JQ="jq"
-    log "DEBUG" "use installed 'jq'"
+    log "[DEBUG  ]" "use installed 'jq'"
 fi
 
-log "DEBUG" "duplicati parsed result is '${DUPLICATI__PARSED_RESULT}'"
-log "DEBUG" "duplicati operation is '${DUPLICATI__OPERATIONNAME}'"
-log "DEBUG" "duplicati backup name is '${DUPLICATI__backup_name}'"
-log "DEBUG" "duplicati event name is '${DUPLICATI__EVENTNAME}'"
+log "[DEBUG  ]" "duplicati parsed result is '${DUPLICATI__PARSED_RESULT}'"
+log "[DEBUG  ]" "duplicati operation is '${DUPLICATI__OPERATIONNAME}'"
+log "[DEBUG  ]" "duplicati backup name is '${DUPLICATI__backup_name}'"
+log "[DEBUG  ]" "duplicati event name is '${DUPLICATI__EVENTNAME}'"
 
 if [ -n "${DUPLICATI__PARSED_RESULT}" ]  &&  [[ ! " ${RESULTS[@]} " =~ " ${DUPLICATI__PARSED_RESULT} " ]]; then
-    log "ERROR" "'${DUPLICATI__PARSED_RESULT}' is not a valid result (valid: $(IFS=\| ; echo "${RESULTS[*]}"))"
+    log "[ERROR  ]" "'${DUPLICATI__PARSED_RESULT}' is not a valid result (valid: $(IFS=\| ; echo "${RESULTS[*]}"))"
     exit 1
 fi
 
 # check if operation is allowed
 if [[ ! " ${ALLOWED_OPERATIONS[@]} " =~ " ${DUPLICATI__OPERATIONNAME} " ]]; then
-    log "WARNING" "'${DUPLICATI__OPERATIONNAME}' is not a wanted operation. exit"
+    log "[WARNING]" "'${DUPLICATI__OPERATIONNAME}' is not a wanted operation. exit"
     exit 0
 fi
 
@@ -194,14 +194,14 @@ fi
 HEALTHCHECKS_CHECKS=$(curl -fsS --retry 3 --header "X-Api-Key: ${TOKEN}" "${HEALTHCHECKS_URL%/}/api/v1/checks/")
 
 if [ ! -n "${HEALTHCHECKS_CHECKS}" ] || [ "${HEALTHCHECKS_CHECKS}" == "null" ]; then
-    log "ERROR" "cannot receive list of existing checks"
+    log "[ERROR  ]" "cannot receive list of existing checks"
     exit 1
 fi
 
 # extract ping url
 PING_URL=$(echo "${HEALTHCHECKS_CHECKS}" | ${JQ} -r ".checks[] | select(.name == \"$PREFIX${DUPLICATI__backup_name}\").ping_url")
 if [ -z "${PING_URL}" ] || [ "${PING_URL}" == "null" ]; then
-    log "ERROR" "cannot evaluate ping url for '${DUPLICATI__backup_name}'"
+    log "[ERROR  ]" "cannot evaluate ping url for '${DUPLICATI__backup_name}'"
     exit 1
 fi
 
@@ -209,19 +209,19 @@ if [ $DUPLICATI__EVENTNAME == "BEFORE" ]; then
     [ -n "$SEND_START" ] && PING_URL="${PING_URL}/start"
 elif [ "${DUPLICATI__PARSED_RESULT}" != "Success" ]; then
     # update url if job was NOT successfull
-    log "ERROR" "Duplicati job status is '${DUPLICATI__PARSED_RESULT}'"
+    log "[ERROR  ]" "Duplicati job status is '${DUPLICATI__PARSED_RESULT}'"
     PING_URL="${PING_URL}/fail"
 fi
-log "DEBUG" "get 'ping_url' '${PING_URL}'"
+log "[DEBUG  ]" "get 'ping_url' '${PING_URL}'"
 
 result=$(curl -fsS --retry 3 "${PING_URL}")
-log "DEBUG" "healthchecks retuned '${result}'"
+log "[DEBUG  ]" "healthchecks retuned '${result}'"
 
 if [ "${result}" != "OK" ]; then
-    log "ERROR" "cannot update healthchecks! healthchecks returned '${result}'"
+    log "[ERROR  ]" "cannot update healthchecks! healthchecks returned '${result}'"
     exit 1
 fi
 
-log "INFO" "healthcheck for Duplicati job '${DUPLICATI__backup_name}' successfully updated"
+log "[INFO   ]" "healthcheck for Duplicati job '${PREFIXS}${DUPLICATI__backup_name}' successfully updated"
 
 exit 0
